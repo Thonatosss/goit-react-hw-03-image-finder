@@ -1,8 +1,8 @@
-const ImageGalleryItem = () => {
+const ImageGalleryItem = ({imgUrl}) => {
   return (
     <div>
       <li>
-        <img src="" alt="" />
+        <img src={imgUrl} alt="" width='300'/>
       </li>
     </div>
   );

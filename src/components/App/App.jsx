@@ -2,6 +2,7 @@ import { SearchBar } from "components/SearchBar/SearchBar";
 import React, { Component } from 'react';
 import { ToastContainer} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { ImageGallery } from "components/ImageGallery/ImageGallery";
 
 export class App extends Component{
 
@@ -15,8 +16,9 @@ export class App extends Component{
   render() {
     return (
       <div>
+        <ToastContainer />
         <SearchBar onSubmit={this.handleFormSubmit} />
-        <ToastContainer/>
+        <ImageGallery imgToSearch={ this.state.searchQuerry } />
       </div>
     );
   }
