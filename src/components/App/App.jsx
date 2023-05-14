@@ -13,12 +13,13 @@ export class App extends Component{
   handleFormSubmit = searchQuerry => {
     this.setState({searchQuerry})
   }
+  
   render() {
     return (
       <div>
         <ToastContainer />
         <SearchBar onSubmit={this.handleFormSubmit} />
-        <ImageGallery imgToSearch={ this.state.searchQuerry } />
+        <ImageGallery imgToSearch={ this.state.searchQuerry }/>
       </div>
     );
   }
