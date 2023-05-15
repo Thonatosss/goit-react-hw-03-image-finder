@@ -1,54 +1,21 @@
 import React, { Component } from 'react';
 import { ImageGalleryItem } from 'components/ImageGalleryItem/ImageGalleryItem';
 import { Triangle } from 'react-loader-spinner';
-import axios from 'axios';
 import { Modal } from 'components/Modal/Modal';
 import { List } from './ImageGallery.styled';
 import { LoadMoreButton } from 'components/LoadMoreButton/LoadMoreButton';
+import { LoaderWrapper } from 'components/Loader/Loader.styled';
 
-const BASE_URL = 'https://pixabay.com/api/';
-const API_KEY = '34587378-1709a2c174b77a7efdbc7c71b';
+
 
 class ImageGallery extends Component {
   state = {
-    images: [],
-    page: 1,
     status: '',
     showModal: false,
     currentImg: '',
   };
 
-  componentDidUpdate(prevProps, prevState) {
-    if (prevProps.imgToSearch !== this.props.imgToSearch) {
-      this.setState({ images: [], page: 1 }, () => this.getImages());
-    }
-  }
-
-  async getImages() {
-    try {
-      this.setState({ status: 'pending' });
-      const { page } = this.state;
-      const response = await axios.get(
-        `${BASE_URL}?key=${API_KEY}&q=${this.props.imgToSearch}&image_type=photo&per_page=12&page=${page}`
-      );
-      const newImages = response.data.hits;
-      this.setState(prevState => ({
-        images: [...prevState.images, ...newImages],
-        status: 'resolved',
-      }));
-    } catch (error) {
-      this.setState({ status: 'rejected' });
-    }
-  }
-
-  loadMore = () => {
-    this.setState(
-      prevState => ({ page: prevState.page + 1 }),
-      () => {
-        this.getImages();
-      }
-    );
-  };
+  
 
   showModal = imgUrl => {
     this.setState({ showModal: true, currentImg: imgUrl });
@@ -59,10 +26,15 @@ class ImageGallery extends Component {
   };
 
   render() {
-    const { images, status, showModal, currentImg } = this.state;
+    const {showModal, currentImg } = this.state;
+    const {status} = this.props;
 
     if (status === 'pending') {
-      return <Triangle />;
+      return (
+        <LoaderWrapper>
+          <Triangle />
+        </LoaderWrapper>
+      );
     }
 
     if (status === 'rejected') {
@@ -73,7 +45,7 @@ class ImageGallery extends Component {
       return (
         <div>
           <List>
-            {images.map(image => (
+            {this.props.images.map(image => (
               <ImageGalleryItem
                 key={image.id}
                 imgUrl={image.webformatURL}
@@ -81,12 +53,9 @@ class ImageGallery extends Component {
               />
             ))}
           </List>
-          <LoadMoreButton onClick={this.loadMore} />
+          <LoadMoreButton onClick={this.props.loadMore} />
           {showModal && (
-            <Modal
-              onCloseModal={this.hideModal}
-              imgSrc={currentImg}
-            ></Modal>
+            <Modal onCloseModal={this.hideModal} imgSrc={currentImg}></Modal>
           )}
         </div>
       );

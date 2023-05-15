@@ -1,27 +1,62 @@
-import { SearchBar } from "components/SearchBar/SearchBar";
 import React, { Component } from 'react';
-import { ToastContainer} from 'react-toastify';
+import { SearchBar } from 'components/SearchBar/SearchBar';
+import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { ImageGallery } from "components/ImageGallery/ImageGallery";
+import { ImageGallery } from 'components/ImageGallery/ImageGallery';
+import axios from 'axios';
 
-export class App extends Component{
+const BASE_URL = 'https://pixabay.com/api/';
+const API_KEY = '34587378-1709a2c174b77a7efdbc7c71b';
 
+export class App extends Component {
   state = {
-    searchQuerry: ''
+    searchQuery: '',
+    images: [],
+    page: 1,
+    status: '', // Add the 'status' property to the state
+  };
+
+  componentDidUpdate(prevProps, prevState) {
+    if (prevState.searchQuery !== this.state.searchQuery) {
+      this.setState({ images: [], page: 1, status: 'pending' }, () => this.getImages());
+    }
   }
 
-  handleFormSubmit = searchQuerry => {
-    this.setState({searchQuerry})
+  async getImages() {
+    try {
+      const { page, searchQuery } = this.state;
+      const response = await axios.get(
+        `${BASE_URL}?key=${API_KEY}&q=${searchQuery}&image_type=photo&per_page=12&page=${page}`
+      );
+      const newImages = response.data.hits;
+      this.setState(prevState => ({
+        images: [...prevState.images, ...newImages],
+        status: 'resolved',
+      }));
+    } catch (error) {
+      this.setState({ status: 'rejected' });
+    }
   }
-  
+
+  loadMore = () => {
+    this.setState(prevState => ({ page: prevState.page + 1 }), () => {
+      this.getImages();
+    });
+  };
+
+  handleFormSubmit = searchQuery => {
+    this.setState({ searchQuery });
+  };
+
   render() {
+    const { images, status } = this.state; // Destructure the 'status' property
+
     return (
       <div>
         <ToastContainer />
         <SearchBar onSubmit={this.handleFormSubmit} />
-        <ImageGallery imgToSearch={ this.state.searchQuerry }/>
+        <ImageGallery images={images} status={status} loadMore={this.loadMore} /> {/* Pass the 'status' prop */}
       </div>
     );
   }
-  
-};
+}

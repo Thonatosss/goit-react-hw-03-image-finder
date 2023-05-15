@@ -1,4 +1,6 @@
 import { Triangle } from 'react-loader-spinner';
+
+
 <Triangle
   height="80"
   width="80"
