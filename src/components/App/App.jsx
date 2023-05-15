@@ -13,8 +13,8 @@ export class App extends Component {
     searchQuery: '',
     images: [],
     page: 1,
-    status: '', // Add the 'status' property to the state
-  };
+    status: '',
+    };
 
   componentDidUpdate(prevProps, prevState) {
     if (prevState.searchQuery !== this.state.searchQuery) {
@@ -49,7 +49,7 @@ export class App extends Component {
   };
 
   render() {
-    const { images, status } = this.state; // Destructure the 'status' property
+    const { images, status } = this.state;
 
     return (
       <div>
